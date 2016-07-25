@@ -1,8 +1,6 @@
 #!/usr/bin/python
 import socket
-import subprocess
 import sys
-from datetime import datetime
 
 # Tuner types, enums in python are a pain...
 tuners = {0: 'Unknown', 1: 'E4000', 2: 'FC0012', 3: 'FC0013', 
