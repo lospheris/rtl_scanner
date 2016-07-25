@@ -22,6 +22,9 @@ Optionally you can pass the -of or --output_file argument to write the results t
 
 ### Examples
 > ./rtl_scanner.py -a 127.0.0.0 -m 255.255.255.0
+
 > ./rtl_scanner.py --address 127.0.0.1 --mask 255.255.255.255
+
 > ./rtl_scanner.py -a 127.0.0.0 -m 255.255.255.0 -of results.txt
+
 > ./rtl_scanner.py -a 127.0.0.0 -m 255.255.255.0 --output_file results.txt
