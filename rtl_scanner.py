@@ -96,16 +96,68 @@ def scan_network_for_dongles(address, mask, port=1234):
 
     return dongles_found
 
+
+def write_results_to_file(filename, results):
+    
+    try:
+        file = open(filename, "w+")
+        
+    except IOError as e:
+        print("The following error was encountered opening the file: " + filename)
+        print("IOError: {0}".format(e))
+        return 1
+    file.write("Address\t\tType\tGain\n")
+    for item in results:
+        file.write(item[0] + "\t" + tuners[item[2]] + "\t" + str(item[3]) + "\n")
+    file.close()
+    return 0
+
+
+def print_help():
+    print("The rtl_scanner program scans for rtl_tcp servers.")
+    print("It should be invoked: rtl_scanner.py -a <network address> -m <network_mask>\n\n")
+    print("-a <network address> or --address <network address> - A string representing the network to scan")
+    print("-m <network mask> or --mask <network mask>          - A string representing the mask of the network")
+    print("-of <file name> or --output_file <file name>        - A string representing a file to dump results")
+    print("Single hosts should be input as the host address with a mask of 255.255.255.255")
+    print("-h or --help is an optional argument to print this message")
+    exit(0)
+    
+
 if __name__ == "__main__":
+	
+    # Some quick variables
+    address = None
+    mask = None
+    help_called = False
+    results_to_file = False
+    filename = ""
     
-    #scan for the dongles
-    dongles = scan_network_for_dongles("127.0.0.0", "255.255.255.0")
+    # Handle command line args
+    if len(sys.argv) < 2:
+        print_help()
+    for index, arg in enumerate(sys.argv):
+        if arg == "-a" or arg == "--address":
+            address = sys.argv[index + 1]
+        if arg == "-m" or arg == "--mask":
+            mask = sys.argv[index + 1]
+        if arg == "-h" or arg == "--help":
+            help_called = True
+        if arg == "-of" or arg == "--output_file":
+            results_to_file = True
+            filename = sys.argv[index + 1]
+
+    # Print help if we don't have address and mask or help is requested.
+    if help_called or address is None or mask is None:
+        print_help()
+	
+    # Scan for the dongles
+    dongles = scan_network_for_dongles(address, mask)
     
-    #Create some space before spewing the tuners found
-    print("\n\n\n\n\n")
-    
-    #print the dongles found
+    # Dongles were found
     if len(dongles) > 0:
+        if results_to_file:
+            write_results_to_file(filename, dongles)
         print("The Following dongles were found")
         print("Address\t\tType\tGain")
         for host in dongles:
@@ -113,3 +165,4 @@ if __name__ == "__main__":
                   + tuners[host[2]] + "\t" + str(host[3]))
     else:
         print("No dongles found. :(")
+	exit(0)
